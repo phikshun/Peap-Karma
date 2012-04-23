@@ -28,3 +28,33 @@ an Alfa 2W USB adapter.
 
 The resulting hashes can be cracked with asleap or 
 http://code.google.com/p/mschapv2acc/.
+
+Here are the commands used to start (your mileage may vary)
+---------------------------------
+
+./hostapd -R -A hostapd.conf
+ifconfig at0 up
+ifconfig at0 192.168.2.129 netmask 255.255.255.128
+route add -net 192.168.2.128 netmask 255.255.255.128 gw 192.168.2.129
+dhcpd3 -cf /etc/dhcp3/dhcpd.conf -pf /var/run/dhcp3-server/dhcpd.pid at0
+iptables --flush
+iptables --table nat --flush
+iptables --delete-chain
+iptables --table nat --delete-chain
+iptables --table nat --append POSTROUTING --out-interface eth0 -j MASQUERADE
+iptables --append FORWARD --in-interface at0 -j ACCEPT
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
+Example dhcpd.conf:
+---------------------------------
+
+ddns-update-style ad-hoc;
+default-lease-time 600;
+max-lease-time 7200;
+subnet 192.168.2.128 netmask 255.255.255.128 {
+option subnet-mask 255.255.255.128;
+option broadcast-address 192.168.2.255;
+option routers 192.168.2.129;
+option domain-name-servers 8.8.8.8;
+range 192.168.2.130 192.168.2.140;
+}
