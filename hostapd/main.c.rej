@@ -1,0 +1,11 @@
+--- hostapd/main.c
++++ hostapd/main.c
+@@ -505,7 +511,7 @@
+ 		return -1;
+ 
+ 	for (;;) {
+-		c = getopt(argc, argv, "Bdf:hKP:tv");
++		c = getopt(argc, argv, "Bdf:hKP:tRAv");
+ 		if (c < 0)
+ 			break;
+ 		switch (c) {
